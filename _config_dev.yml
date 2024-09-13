@@ -4,15 +4,15 @@ title: Alex Anthis | Software Engineer
 description: Goal driven back-end software engineer focused on building robust and perfomant solutions
 url: https://alexanthis.com/
 baseurl: ''
-email: anthiswebdev@gmail.com
+email: alexanthis@proton.me
 cover: https://alexanthis.com/img/og.png
 logo: https://alexanthis.com/img/emojis/alpha_squared_64.png
 resume: https://alexanthis.com/resume.pdf
 social:
   - title: email
-    url: mailto:anthiswebdev@gmail.com
+    url: mailto:alexanthis@proton.me
   - title: linkedin
-    url: https://www.linkedin.com/in/alex-anthis/    
+    url: https://www.linkedin.com/in/alex-anthis
   - title: github
     url: https://github.com/alexanth
   - title: instagram
