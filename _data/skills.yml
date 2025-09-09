@@ -2,14 +2,17 @@ languages:
   - item: Java
   - item: SQL
   - item: Bash
+  - item: Python
 
 frameworks:
   - item: Spring
   - item: SpringBoot
   - item: Android
+  - item: Airflow
 
 tools:
   - item: Git
+  - item: JMeter
   - item: Postman
   - item: SoapUI
 
@@ -17,3 +20,4 @@ databases:
   - item: MySQL
   - item: Redis
   - item: Oracle
+  - item: MongoDB
