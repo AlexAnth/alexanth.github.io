@@ -56,6 +56,24 @@ body {
   }
 }
 
+// Ambient particle field, replicated from spirilio.gr's footer
+// (`.footer_top-area .wgl-container`), now spanning the whole page.
+// See js/main.js for the particles.js config.
+.particles-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+
+  canvas {
+    display: block;
+  }
+}
+
+#site {
+  position: relative;
+  z-index: 1;
+}
+
 a {
   @include transition;
   text-decoration: none;
