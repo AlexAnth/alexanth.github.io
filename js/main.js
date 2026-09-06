@@ -178,8 +178,8 @@ $(function() {
   // occlude any particle behind them.
   const TEXT_SELECTOR =
     '.intro__hello, .intro__tagline, .intro__contact, .section__title, p, ' +
-    '.job__company, .job__time, .job__position, .skillz__category__label, ' +
-    '.skillz__category__item, .project__name, .footer__copyright, .footer__links a';
+    '.jobs, .skillz__category__label, .skillz__category__item, ' +
+    '.project__name, .project__used, .footer__copyright, .footer__links a';
   const DIM_OPACITY = 0.06;
   const FADE_EASE = 0.08;
 
