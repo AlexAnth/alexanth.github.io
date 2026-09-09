@@ -26,5 +26,30 @@
 <meta name="twitter:title" content="{{site.title}}">
 <meta name="twitter:description" content="{{site.description}}">
 <meta name="twitter:image:src" content="{{site.cover}}">
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "{{ site.name }}",
+      "url": "{{ site.url }}",
+      "image": "{{ site.cover }}",
+      "email": "mailto:{{ site.email }}",
+      "jobTitle": "Software Engineer",
+      "sameAs": [
+        "https://www.linkedin.com/in/alex-anthis",
+        "https://github.com/alexanth",
+        "https://instagram.com/alpha_squared"
+      ]
+    }
+</script>
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "{{ site.title }}",
+      "url": "{{ site.url }}",
+      "image": "{{ site.cover }}"
+    }
+</script>
 <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700" rel="stylesheet">
 <link rel="stylesheet" href="{{ site.baseurl }}/css/main.css" hreflang="en-us">
