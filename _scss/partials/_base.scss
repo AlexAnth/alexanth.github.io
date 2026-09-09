@@ -72,6 +72,24 @@ body {
 #site {
   position: relative;
   z-index: 1;
+  // On spirilio.gr the particle canvas is confined to a mostly-empty footer
+  // strip, so the cursor lands on the canvas (and triggers its hover "grab"
+  // line-link) almost everywhere. Here the canvas spans the whole page behind
+  // real content, and every block-level element — even ones that look like
+  // empty space, like the margin next to a heading — still has its own hit
+  // box that swallows the hover before it reaches the canvas underneath.
+  // Making #site pass events through by default, and re-enabling them only
+  // on things that are actually clickable/hoverable, exposes the canvas
+  // everywhere else so the grab effect actually fires like on the reference.
+  pointer-events: none;
+
+  a,
+  button,
+  label,
+  input,
+  .wave-hand {
+    pointer-events: auto;
+  }
 }
 
 a {
