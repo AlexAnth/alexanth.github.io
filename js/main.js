@@ -3,21 +3,23 @@ $(function() {
   const hours = d.getHours();
   const night = hours >= 19 || hours <= 7; // between 7pm and 7am
   const body = document.querySelector('body');
-  const toggle = document.getElementById('toggle');
   const input = document.getElementById('switch');
+
+  function applyBodyTheme() {
+    if (input.checked) {
+      body.classList.add('night');
+    } else {
+      body.classList.remove('night');
+    }
+  }
 
   if (night) {
     input.checked = true;
-    body.classList.add('night');
   }
+  applyBodyTheme();
 
-  toggle.addEventListener('click', function() {
-    const isChecked = input.checked;
-    if (isChecked) {
-      body.classList.remove('night');
-    } else {
-      body.classList.add('night');
-    }
+  input.addEventListener('change', function() {
+    applyBodyTheme();
     syncParticlesToTheme();
   });
 
@@ -80,22 +82,35 @@ $(function() {
   // (`.footer_top-area .wgl-container`), config pulled from their live particles.js instance.
   // Runs as a fixed full-page layer so it's visible everywhere, not just the footer;
   // particles.js scales particle count to the canvas area via `number.density`.
-  // Only runs in dark mode — see syncParticlesToTheme, called on load and on toggle.
+  // Color follows day/night — see syncParticlesToTheme, called on load and on toggle.
   const particlesReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const particlesContainer = document.getElementById('particles-bg');
+  const PARTICLE_COLOR_NIGHT = '#77a1bc';
+  const PARTICLE_COLOR_DAY = '#d4d7da';
   let particlesActive = false;
+
+  function particleColor() {
+    return body.classList.contains('night') ? PARTICLE_COLOR_NIGHT : PARTICLE_COLOR_DAY;
+  }
+
+  function hexToRgb(hex) {
+    const h = hex.replace('#', '');
+    return {
+      r: parseInt(h.slice(0, 2), 16),
+      g: parseInt(h.slice(2, 4), 16),
+      b: parseInt(h.slice(4, 6), 16),
+    };
+  }
 
   function startParticles() {
     if (!particlesContainer || particlesReduced || particlesActive) return;
     particlesActive = true;
-    // destroypJS() (see stopParticles) nulls out the library's own global
-    // pJSDom rather than emptying it, so it has to be reset before the next
-    // particlesJS() call or the library throws trying to push onto null.
     window.pJSDom = [];
+    const color = particleColor();
     particlesJS('particles-bg', {
       particles: {
         number: { value: 50, density: { enable: true, value_area: 800 } },
-        color: { value: '#77a1bc' },
+        color: { value: color },
         shape: {
           type: 'circle',
           stroke: { width: 0, color: '#ff0000' },
@@ -114,7 +129,7 @@ $(function() {
         line_linked: {
           enable: false,
           distance: 150,
-          color: '#77a1bc',
+          color: color,
           opacity: 0.4,
           width: 1,
         },
@@ -146,23 +161,28 @@ $(function() {
       },
       retina_detect: true,
     });
+    dimGrabLines(window.pJSDom[0].pJS);
   }
 
-  function stopParticles() {
-    if (!particlesActive) return;
-    particlesActive = false;
-    const dom = window.pJSDom && window.pJSDom[0];
-    if (dom && dom.pJS) {
-      dom.pJS.fn.vendors.destroypJS();
+  function applyParticleTheme() {
+    const color = particleColor();
+    const rgb = hexToRgb(color);
+    const pJS = window.pJSDom && window.pJSDom[0] && window.pJSDom[0].pJS;
+    if (!pJS || !pJS.particles) return;
+    pJS.particles.color.value = color;
+    pJS.particles.line_linked.color = color;
+    pJS.particles.line_linked.color_rgb_line = rgb;
+    const particles = pJS.particles.array;
+    if (!particles) return;
+    for (let i = 0; i < particles.length; i++) {
+      particles[i].color.value = color;
+      particles[i].color.rgb = rgb;
     }
   }
 
   function syncParticlesToTheme() {
-    if (body.classList.contains('night')) {
-      startParticles();
-    } else {
-      stopParticles();
-    }
+    startParticles();
+    applyParticleTheme();
   }
 
   syncParticlesToTheme();
@@ -180,8 +200,12 @@ $(function() {
     '.intro__hello, .intro__tagline, .intro__contact, .section__title, p, ' +
     '.jobs, .skillz__category__label, .skillz__category__item, ' +
     '.project__name, .project__used, .footer__copyright, .footer__links a';
-  const DIM_OPACITY = 0.06;
+  const DIM_FACTOR = 0.06;
   const FADE_EASE = 0.08;
+  // A grab line only exists while the cursor is near the particle, so it can
+  // vanish and come back many times per hover. Easing from a stale value would
+  // flash it in at the wrong opacity; anything older than a few frames snaps.
+  const LINE_RESUME_MS = 100;
 
   let textRects = [];
   let textRectsQueued = false;
@@ -213,6 +237,78 @@ $(function() {
     return false;
   }
 
+  // Liang–Barsky: clips the segment against the rect's four slabs and reports
+  // whether anything survives. A line is dimmed as a whole the moment it enters
+  // text — testing only its endpoints would leave a line strung across a
+  // paragraph at full strength, and dimming only the covered span would put a
+  // hard brightness step mid-line, the same split the per-particle fade avoids.
+  function segmentHitsRect(x1, y1, x2, y2, r) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    let enter = 0;
+    let exit = 1;
+
+    function clip(edge, offset) {
+      if (edge === 0) return offset >= 0;
+      const t = offset / edge;
+      if (edge < 0) {
+        if (t > exit) return false;
+        if (t > enter) enter = t;
+      } else {
+        if (t < enter) return false;
+        if (t < exit) exit = t;
+      }
+      return true;
+    }
+
+    return (
+      clip(-dx, x1 - r.left) &&
+      clip(dx, r.right - x1) &&
+      clip(-dy, y1 - r.top) &&
+      clip(dy, r.bottom - y1)
+    );
+  }
+
+  function crossesText(x1, y1, x2, y2) {
+    for (let i = 0; i < textRects.length; i++) {
+      if (segmentHitsRect(x1, y1, x2, y2, textRects[i])) return true;
+    }
+    return false;
+  }
+
+  // particles.js strokes the grab lines itself, so the fade is applied by
+  // scaling the canvas alpha around its own draw call.
+  function dimGrabLines(pJS) {
+    const drawGrabLine = pJS.fn.modes.grabParticle;
+
+    pJS.fn.modes.grabParticle = function(particle) {
+      const mouse = pJS.interactivity.mouse;
+      if (mouse.pos_x == null) return drawGrabLine.call(this, particle);
+
+      const ratio = pJS.canvas.pxratio || 1;
+      const target = crossesText(
+        particle.x / ratio,
+        particle.y / ratio,
+        mouse.pos_x / ratio,
+        mouse.pos_y / ratio
+      )
+        ? DIM_FACTOR
+        : 1;
+      const now = performance.now();
+      particle.lineDim =
+        now - (particle.lineDimAt || 0) > LINE_RESUME_MS
+          ? target
+          : particle.lineDim + (target - particle.lineDim) * FADE_EASE;
+      particle.lineDimAt = now;
+
+      const ctx = pJS.canvas.ctx;
+      const alpha = ctx.globalAlpha;
+      ctx.globalAlpha = alpha * particle.lineDim;
+      drawGrabLine.call(this, particle);
+      ctx.globalAlpha = alpha;
+    };
+  }
+
   refreshTextRects();
   window.addEventListener('resize', queueTextRectsRefresh);
   window.addEventListener('scroll', queueTextRectsRefresh, { passive: true });
@@ -228,11 +324,13 @@ $(function() {
           const particle = particles[i];
           if (particle.baseOpacity === undefined) {
             particle.baseOpacity = particle.opacity;
+            particle.dim = 1;
           }
           const x = particle.x / ratio;
           const y = particle.y / ratio;
-          const target = isBehindText(x, y) ? DIM_OPACITY : particle.baseOpacity;
-          particle.opacity += (target - particle.opacity) * FADE_EASE;
+          const target = isBehindText(x, y) ? DIM_FACTOR : 1;
+          particle.dim += (target - particle.dim) * FADE_EASE;
+          particle.opacity = particle.baseOpacity * particle.dim;
         }
       }
     }
