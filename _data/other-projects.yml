@@ -1,3 +1,11 @@
+- name: Hellenic Parliament Transparency Application
+  description:   Hellenic Parliament Transparency application provides citizens the ability to easily access parliamentary decisions on their mobile devices and stay up to date with Parliament's management and administration, budgeting and staff matters
+  used:
+    - thing: Android
+    - thing: Java
+    - thing: MVC
+    - thing: Realm Native Database
+  link: https://play.google.com/store/apps/details?id=com.alex.diafaneia&hl=us
 - name: NewsFeed API
   description: Reactive API microservice built with Spring WebFlux to store and retrieve articles in non blocking fashion supported by reactive MongoDB driver
   used:
@@ -8,4 +16,3 @@
     - thing: MongoDB
     - thing: Swagger
   link: https://github.com/AlexAnth/NewsFeedAPI
-
