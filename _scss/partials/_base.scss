@@ -63,6 +63,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 0;
+  transform: translateZ(0);
 
   canvas {
     display: block;
