@@ -1,4 +1,13 @@
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js' type="text/javascript" charset="utf-8"></script>
-<script src="https://unpkg.com/scrollreveal/dist/scrollreveal.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+<script src="{{ site.baseurl }}/js/jquery.min.js"></script>
+<script src="{{ site.baseurl }}/js/scrollreveal.min.js"></script>
+<script src="{{ site.baseurl }}/js/particles.min.js"></script>
 <script src="js/main.js" type="text/javascript" charset="utf-8"></script>
+<script type="module">
+  import { _parts, serializeVars } from '{{ site.baseurl }}/js/blobatar-internal.js';
+  import { gaze } from '{{ site.baseurl }}/js/blobatar-gaze.js';
+
+  const svg = document.querySelector('.blobatar');
+  const { cls, inner, vars } = _parts('alain00', { animate: 'always' });
+  svg.innerHTML = `<g class="${cls}" style="${serializeVars(vars)}">${inner}</g>`;
+  gaze(svg.firstChild, { target: 'pointer' });
+</script>
