@@ -55,7 +55,6 @@ $(function() {
   sr.reveal('.background');
   sr.reveal('.skills');
   sr.reveal('.experience', { viewFactor: 0.1 });
-  sr.reveal('.featured-projects', { viewFactor: 0.1 });
   sr.reveal('.other-projects', { viewFactor: 0.05 });
 
   // Ambient particle field, replicated from spirilio.gr's footer

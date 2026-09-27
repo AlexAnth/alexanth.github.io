@@ -28,6 +28,8 @@
       max-width: 700px;
       overflow: visible;
       margin: 0;
+      isolation: isolate;
+      transform: translateZ(0);
       a {
         display: block;
       }
