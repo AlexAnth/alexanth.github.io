@@ -52,41 +52,17 @@
   }
   &__hello {
     font-weight: 300;
-    .wave-hand {
-      background-image: url('../img/emojis/alpha_squared_64.png');
+    display: flex;
+    align-items: center;
+    .blobatar {
+      width: 1.2em;
+      height: 1.2em;
       margin-left: 10px;
-      cursor: pointer;
-
-      &.animated {
-        animation-duration: 1.5s;
-        animation-fill-mode: both;
-      }
-      &.wave {
-        animation-name: wave;
-      }
-
-      @keyframes wave {
-        from {
-          transform: none;
-        }
-        15% {
-          transform: translate3d(-20%, 0, 0) rotate3d(0, 0, 1, -10deg);
-        }
-        30% {
-          transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 7deg);
-        }
-        45% {
-          transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -10deg);
-        }
-        60% {
-          transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 5deg);
-        }
-        75% {
-          transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -2deg);
-        }
-        to {
-          transform: none;
-        }
+      overflow: visible;
+      --mo-track-travel: 12px;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      &:hover {
+        transform: scale(1.15);
       }
     }
   }
